@@ -2,8 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
-// import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-// import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import path from 'path';
 
 export default defineConfig(() => ({
   server: {
@@ -25,4 +24,12 @@ export default defineConfig(() => ({
       shared: ['react', 'react-dom'],
     }),
   ],
+  build: {
+    outDir: path.join(__dirname, '../dist'),
+    emptyOutDir: true,
+    reportCompressedSize: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+  },
 }));
