@@ -1,53 +1,58 @@
-import React, { useState, Suspense, lazy } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { RemoteLoader } from '../components/RemoteLoader';
-import { useAuthStore } from '../store/useAuthStore.ts';
-
-const Movies = lazy(() => import('movies/MoviesApp'));
-const Music = lazy(() => import('music/MusicApp'));
+import { auth, useAuth } from '../store/authStore';
 
 export function App() {
-  const user = useAuthStore((state) => state.user);
-  const login = useAuthStore((state) => state.login);
-  const logout = useAuthStore((state) => state.logout);
+  const user = useAuth((state) => state.user);
   const [name, setName] = useState('');
+  const trimmedName = name.trim();
 
-  console.log({ user, login, logout });
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!trimmedName) return;
+    await auth.login({ name: trimmedName });
+    setName('');
+  };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">Streambox Host</h1>
 
       {!user ? (
-        <div className="mt-4">
+        <form className="mt-4" onSubmit={handleLogin}>
           <input
             className="border p-1 mr-2"
             placeholder="Enter name"
+            aria-label="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <button
-            className="bg-blue-500 text-white px-3 py-1 rounded"
-            onClick={() => login(name)}
+            type="submit"
+            className="bg-blue-500 text-white px-3 py-1 rounded disabled:opacity-50"
+            disabled={!trimmedName}
           >
             Login
           </button>
-        </div>
+        </form>
       ) : (
         <div className="mt-4">
           <span className="mr-2">Hello, {user.name}!</span>
           <button
+            type="button"
             className="bg-red-500 text-white px-3 py-1 rounded"
-            onClick={logout}
+            onClick={() => auth.logout()}
           >
             Logout
           </button>
         </div>
       )}
 
-      <Suspense fallback={<div>Loading remote…</div>}>
-        <Movies />
-        <Music />
-      </Suspense>
+      {/* Each remote gets its own error boundary + Suspense, so one remote being
+          down or slow doesn't blank out the shell or block the other remote. */}
+      <RemoteLoader remote="movies" module="./MoviesApp" />
+      <RemoteLoader remote="music" module="./MusicApp" />
     </div>
   );
 }
