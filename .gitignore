@@ -45,6 +45,7 @@ vite.config.*.timestamp*
 
 # Local planning docs
 PLAN.md
+docs/
 
 # Local environment variables (keep .env.example committed)
 .env.local
