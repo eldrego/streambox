@@ -1,3 +1,4 @@
+import './newrelic'; // must be first — initialises New Relic before React
 import { StrictMode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import * as ReactDOM from 'react-dom/client';

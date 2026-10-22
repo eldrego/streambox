@@ -60,6 +60,7 @@
     "vitest": "^4.0.0"
   },
   "dependencies": {
+    "@newrelic/browser-agent": "^1.311.0",
     "axios": "^1.13.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
