@@ -7,7 +7,7 @@ declare module 'virtual:__federation__' {
    * Loads an exposed module from a remote listed in vite.config `remotes`.
    * `componentName` is the exposed path, e.g. `./MoviesApp`.
    */
-  export function getRemote(
+  export function __federation_method_getRemote(
     remoteName: string,
     componentName: string,
   ): Promise<{ default: ComponentType }>;
