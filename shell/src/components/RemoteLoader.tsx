@@ -1,6 +1,6 @@
 import { Component, Suspense, lazy } from 'react';
 import type { ComponentType, ErrorInfo, LazyExoticComponent, ReactNode } from 'react';
-import { getRemote } from 'virtual:__federation__';
+import { __federation_method_getRemote as getRemote } from 'virtual:__federation__';
 import { recordEvent } from '../newrelic';
 
 type Props = {

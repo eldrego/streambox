@@ -11,7 +11,7 @@
  *   useEffect(() => setCurrentRoute(location.pathname), [location.pathname]);
  */
 export function setCurrentRoute(path: string) {
-  window.newrelic?.setCurrentRouteName(path);
+  window.newrelic?.setCurrentRouteName?.(path);
 }
 
 /**
@@ -22,5 +22,5 @@ export function setCurrentRoute(path: string) {
  *   recordEvent('RemoteLoadFailure', { remote: 'music' });
  */
 export function recordEvent(name: string, attributes: Record<string, string | number | boolean> = {}) {
-  window.newrelic?.addPageAction(name, attributes);
+  window.newrelic?.addPageAction?.(name, attributes);
 }

@@ -24,8 +24,6 @@ jobs:
       # - run: pnpm nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -51,15 +49,21 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build shell Docker image
+        env:
+          VITE_NEW_RELIC_ACCOUNT_ID: ${{ secrets.VITE_NEW_RELIC_ACCOUNT_ID }}
+          VITE_NEW_RELIC_TRUST_KEY: ${{ secrets.VITE_NEW_RELIC_TRUST_KEY }}
+          VITE_NEW_RELIC_AGENT_ID: ${{ secrets.VITE_NEW_RELIC_AGENT_ID }}
+          VITE_NEW_RELIC_LICENSE_KEY: ${{ secrets.VITE_NEW_RELIC_LICENSE_KEY }}
+          VITE_NEW_RELIC_APP_ID: ${{ secrets.VITE_NEW_RELIC_APP_ID }}
         run: |
           docker build \
             --file shell/Dockerfile \
             --build-arg VITE_REMOTE_MUSIC_URL=http://localhost:4201/assets/remoteEntry.js \
             --build-arg VITE_REMOTE_MOVIES_URL=http://localhost:4202/assets/remoteEntry.js \
-            --build-arg VITE_NEW_RELIC_ACCOUNT_ID=${{ secrets.VITE_NEW_RELIC_ACCOUNT_ID }} \
-            --build-arg VITE_NEW_RELIC_TRUST_KEY=${{ secrets.VITE_NEW_RELIC_TRUST_KEY }} \
-            --build-arg VITE_NEW_RELIC_AGENT_ID=${{ secrets.VITE_NEW_RELIC_AGENT_ID }} \
-            --build-arg VITE_NEW_RELIC_LICENSE_KEY=${{ secrets.VITE_NEW_RELIC_LICENSE_KEY }} \
-            --build-arg VITE_NEW_RELIC_APP_ID=${{ secrets.VITE_NEW_RELIC_APP_ID }} \
+            --build-arg VITE_NEW_RELIC_ACCOUNT_ID \
+            --build-arg VITE_NEW_RELIC_TRUST_KEY \
+            --build-arg VITE_NEW_RELIC_AGENT_ID \
+            --build-arg VITE_NEW_RELIC_LICENSE_KEY \
+            --build-arg VITE_NEW_RELIC_APP_ID \
             --tag streambox/shell:ci \
             .
