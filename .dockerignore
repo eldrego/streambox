@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# NX cache
+.nx
+
+# Build output
+dist
+tmp
+out-tsc
+
+# Git
+.git
+.gitignore
+
+# Local env files
+.env.local
+.env.production
+
+# Test artifacts
+coverage
+
+# Editor
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+*.md
+PLAN.md

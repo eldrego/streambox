@@ -1,0 +1,72 @@
+name: streambox
+
+networks:
+  streambox-net:
+    driver: bridge
+
+services:
+  music:
+    image: streambox/music:latest
+    container_name: music
+    networks:
+      - streambox-net
+    ports:
+      - "4201:4201"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4201/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  movies:
+    image: streambox/movies:latest
+    container_name: movies
+    networks:
+      - streambox-net
+    ports:
+      - "4202:4202"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4202/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  shell:
+    build:
+      context: .
+      dockerfile: shell/Dockerfile
+      # VITE_ vars are baked into the JS bundle at build time by Vite.
+      # These URLs are used by the BROWSER, not by Docker internals.
+      # Docker Desktop maps host ports: localhost:4201 → music container, localhost:4202 → movies container.
+      # Do NOT use Docker internal hostnames (e.g. http://music:4201) — the browser cannot resolve them.
+      args:
+        VITE_REMOTE_MUSIC_URL: http://localhost:4201/assets/remoteEntry.js
+        VITE_REMOTE_MOVIES_URL: http://localhost:4202/assets/remoteEntry.js
+        # New Relic — set real values via a .env file or CI secrets, never hardcode
+        VITE_NEW_RELIC_ACCOUNT_ID: ${VITE_NEW_RELIC_ACCOUNT_ID:-}
+        VITE_NEW_RELIC_TRUST_KEY: ${VITE_NEW_RELIC_TRUST_KEY:-}
+        VITE_NEW_RELIC_AGENT_ID: ${VITE_NEW_RELIC_AGENT_ID:-}
+        VITE_NEW_RELIC_LICENSE_KEY: ${VITE_NEW_RELIC_LICENSE_KEY:-}
+        VITE_NEW_RELIC_APP_ID: ${VITE_NEW_RELIC_APP_ID:-}
+    image: streambox/shell:latest
+    container_name: shell
+    networks:
+      - streambox-net
+    ports:
+      - "4200:4200"
+    depends_on:
+      music:
+        condition: service_healthy
+      movies:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4200/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
